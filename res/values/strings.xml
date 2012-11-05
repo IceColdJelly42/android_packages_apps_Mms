@@ -933,4 +933,7 @@
     <string name="hide_avatar">Hide Avatar</string>
     <string name="hide_avatar_summary">Hide avatar in the conversations list screen</string>
 
+    <string name="direct_call_title">Direct Call</string>
+    <string name="direct_call_summary">Picking up the phone calls the current contact</string>
+
 </resources>
