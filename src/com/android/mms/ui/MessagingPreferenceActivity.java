@@ -31,6 +31,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
+import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
@@ -75,6 +76,7 @@ public class MessagingPreferenceActivity extends PreferenceActivity
     public static final String RETRIEVAL_DURING_ROAMING = "pref_key_mms_retrieval_during_roaming";
     public static final String AUTO_DELETE              = "pref_key_auto_delete";
     public static final String GROUP_MMS_MODE           = "pref_key_mms_group_mms";
+    public static final String MSG_SIGNATURE            = "pref_msg_signature";
 
     // Emoji
     public static final String ENABLE_EMOJIS             = "pref_key_enable_emojis";
@@ -119,6 +121,8 @@ public class MessagingPreferenceActivity extends PreferenceActivity
     // Menu entries
     private static final int MENU_RESTORE_DEFAULTS    = 1;
 
+    private SharedPreferences sp;
+
     private Preference mSmsLimitPref;
     private Preference mSmsDeliveryReportPref;
     private CheckBoxPreference mSmsSplitCounterPref;
@@ -153,9 +157,13 @@ public class MessagingPreferenceActivity extends PreferenceActivity
     private CheckBoxPreference mEnableQmCloseAllPref;
     private CheckBoxPreference mEnableQmDarkThemePref;
 
+    private EditTextPreference mSignature;
+    private String mSignatureText;
+
     @Override
     protected void onCreate(Bundle icicle) {
         super.onCreate(icicle);
+        sp = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 
         loadPrefs();
 
@@ -193,6 +201,10 @@ public class MessagingPreferenceActivity extends PreferenceActivity
         mGestureSensitivity = (ListPreference) findPreference(GESTURE_SENSITIVITY);
         mUnicodeStripping = (ListPreference) findPreference(UNICODE_STRIPPING);
         mUnicodeStrippingEntries = getResources().getTextArray(R.array.pref_unicode_stripping_entries);
+
+        mSignature = (EditTextPreference) findPreference(MSG_SIGNATURE);
+        mSignature.setOnPreferenceChangeListener(this);
+        mSignature.setText(sp.getString(MSG_SIGNATURE, ""));
 
         // Get the MMS retrieval settings. Defaults to enabled with roaming disabled
         mMmsAutoRetrievialPref = (CheckBoxPreference) findPreference(AUTO_RETRIEVAL);
@@ -673,6 +685,11 @@ public class MessagingPreferenceActivity extends PreferenceActivity
         } else if (preference == mInputTypePref) {
             adjustInputTypeSummary((String)newValue);
             result = true;
+        } else if (preference == mSignature) {
+            SharedPreferences.Editor editor = sp.edit();
+            editor.putString(MSG_SIGNATURE, (String) newValue);
+            editor.commit();
+            mSignature.setText(sp.getString(MSG_SIGNATURE, ""));
         }
         return result;
     }
