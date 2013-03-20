@@ -930,7 +930,6 @@
     <string name="msg_sig_title">Signature</string>
     <string name="msg_sig_summary">Set a custom Signature for messages</string>
     <string name="msg_sig_enter_text">Enter signature text</string>
-    <!-- **** CYANOGENMOD ADDITIONS END **** -->
 
    <!-- Breathing Notifications -->
    <string name="sms_breath">Breathing SMS</string>
@@ -947,5 +946,12 @@
     <string name="pref_title_mms_message_font_size">Message font size</string>
     <string name="pref_summary_mms_message_font_size">Change font size of message view</string>
     <string name="pref_dialogtitle_mms_message_font_size">Select font size</string>
+
+
+    <!-- Multi Contact selector -->
+    <string name="pref_multi_select">Easy Selector</string>
+    <string name="pref_multi_select_summary">Select multiple contacts using a checkbox</string>
+    <string name="add_recipients">Add recipients</string>
+    <string name="add_recipients_positive_button">Add</string>
 
 </resources>
