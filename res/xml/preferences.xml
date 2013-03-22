@@ -250,6 +250,11 @@
             android:entries="@array/pref_entries_input_type"
             android:entryValues="@array/pref_values_input_type" />
 
+    </PreferenceCategory>
+
+    <!-- Extra Settings -->
+    <PreferenceCategory android:title="@string/pref_extra_settings">
+
         <EditTextPreference
             android:key="pref_msg_signature"
             android:title="@string/msg_sig_title"
@@ -257,5 +262,12 @@
             android:dialogTitle="@string/msg_sig_title"
             android:hint="@string/msg_sig_enter_text"
             android:defaultValue="" />
+
+        <CheckBoxPreference
+            android:key="pref_hide_avatar"
+            android:title="@string/hide_avatar"
+            android:summary="@string/hide_avatar_summary"
+            android:defaultValue="false" />
+
     </PreferenceCategory>
 </PreferenceScreen>
