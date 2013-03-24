@@ -227,8 +227,15 @@
             android:title="@string/pref_title_template_gestures_sensitivity" />
     </PreferenceCategory>
 
-    <!-- Char Settings -->
-    <PreferenceCategory android:title="@string/pref_char_settings">
+    <!-- Extra Settings -->
+    <PreferenceCategory android:title="@string/pref_extra_settings">
+        <ListPreference
+            android:key="pref_key_unicode_stripping"
+            android:title="@string/pref_title_unicode_stripping"
+            android:entries="@array/pref_unicode_stripping_entries"
+            android:entryValues="@array/pref_unicode_stripping_values"
+            android:defaultValue="0" />
+
         <CheckBoxPreference
             android:key="pref_key_enable_emojis"
             android:title="@string/pref_title_enable_emojis"
@@ -252,11 +259,6 @@
             android:title="@string/pref_title_input_type"
             android:entries="@array/pref_entries_input_type"
             android:entryValues="@array/pref_values_input_type" />
-
-    </PreferenceCategory>
-
-    <!-- Extra Settings -->
-    <PreferenceCategory android:title="@string/pref_extra_settings">
 
         <EditTextPreference
             android:key="pref_msg_signature"
