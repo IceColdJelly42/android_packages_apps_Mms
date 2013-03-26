@@ -952,7 +952,7 @@ public class MessagingNotification {
             taskStackBuilder.addNextIntent(mostRecentNotification.mClickIntent);
         }
         // Always have to set the small icon or the notification is ignored
-        if (makeBreath = false) {
+        if (!makeBreath) {
             noti.setSmallIcon(R.drawable.stat_notify_sms);
           } else {
             noti.setSmallIcon(R.drawable.stat_notify_sms_breath);
