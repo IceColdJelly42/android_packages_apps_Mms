@@ -136,6 +136,7 @@ public class MessagingPreferenceActivity extends PreferenceActivity
     private Preference mMmsReadReportPref;
     private Preference mManageSimPref;
     private Preference mClearHistoryPref;
+    private CheckBoxPreference mVibratePref;
     private CheckBoxPreference mBreathPref;
     private CheckBoxPreference mEnableNotificationsPref;
     private CheckBoxPreference mEnablePrivacyModePref;
