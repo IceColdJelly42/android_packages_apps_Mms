@@ -262,11 +262,6 @@
             android:entries="@array/pref_entries_input_type"
             android:entryValues="@array/pref_values_input_type" />
 
-    </PreferenceCategory>
-
-    <!-- Extra Settings -->
-    <PreferenceCategory android:title="@string/pref_extra_settings">
-
         <EditTextPreference
             android:key="pref_msg_signature"
             android:title="@string/msg_sig_title"
