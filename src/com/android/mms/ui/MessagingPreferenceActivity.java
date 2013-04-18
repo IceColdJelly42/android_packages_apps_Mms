@@ -122,6 +122,9 @@ public class MessagingPreferenceActivity extends PreferenceActivity
     private static final String DIRECT_CALL_PREF         = "direct_call_pref";
     public static final String MESSAGE_FONT_SIZE         = "pref_key_mms_message_font_size";
 
+    // Blacklist
+    public static final String BUTTON_BLACKLIST  = "button_blacklist";
+
     // Menu entries
     private static final int MENU_RESTORE_DEFAULTS       = 1;
 
@@ -165,6 +168,9 @@ public class MessagingPreferenceActivity extends PreferenceActivity
     private EditTextPreference mSignature;
     private String mSignatureText;
 
+    // Blacklist
+    private PreferenceScreen mButtonBlacklist;
+
     @Override
     protected void onCreate(Bundle icicle) {
         super.onCreate(icicle);
@@ -184,6 +190,18 @@ public class MessagingPreferenceActivity extends PreferenceActivity
         // we have to reload it whenever we resume.
         setEnabledNotificationsPref();
         registerListeners();
+        updateBlacklistSummary();
+    }
+
+    private void updateBlacklistSummary() {
+        if (mButtonBlacklist != null) {
+            if (PreferenceManager.getDefaultSharedPreferences(this).
+                    getBoolean("button_enable_blacklist", false)) {
+                mButtonBlacklist.setSummary(R.string.blacklist_summary);
+            } else {
+                mButtonBlacklist.setSummary(R.string.blacklist_summary_disabled);
+            }
+        }
     }
 
     private void loadPrefs() {
@@ -232,6 +250,8 @@ public class MessagingPreferenceActivity extends PreferenceActivity
         mInputTypeEntries = getResources().getTextArray(R.array.pref_entries_input_type);
         mInputTypeValues = getResources().getTextArray(R.array.pref_values_input_type);
 
+        // Blacklist
+        mButtonBlacklist = (PreferenceScreen) findPreference(BUTTON_BLACKLIST);
 
         // Breath
         mBreathPref = (CheckBoxPreference) findPreference(NOTIFICATION_BREATH);

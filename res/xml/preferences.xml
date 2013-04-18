@@ -291,4 +291,18 @@
             android:dialogTitle="@string/pref_dialogtitle_mms_message_font_size"/>
 
     </PreferenceCategory>
+
+    <!-- Blacklist settings -->
+    <PreferenceCategory android:title="@string/blacklist_title">
+        <PreferenceScreen
+            android:key="button_blacklist"
+            android:title="@string/blacklist_title"
+            android:persistent="false">
+            <intent android:action="android.intent.action.MAIN"
+                android:targetPackage="com.android.mms"
+                android:targetClass="com.android.mms.BlacklistSetting" />
+        </PreferenceScreen>
+
+    </PreferenceCategory>
+
 </PreferenceScreen>
