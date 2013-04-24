@@ -298,6 +298,12 @@
             android:entryValues="@array/pref_mms_message_font_size_values"
             android:dialogTitle="@string/pref_dialogtitle_mms_message_font_size"/>
 
+        <Preference
+            android:key="pref_text_area_size"
+            android:persistent="false"
+            android:title="@string/pref_text_area_size_title"
+            android:summary="@string/pref_text_area_size_summary" />
+
     </PreferenceCategory>
 
     <!-- Blacklist settings -->
@@ -310,12 +316,6 @@
                 android:targetPackage="com.android.mms"
                 android:targetClass="com.android.mms.BlacklistSetting" />
         </PreferenceScreen>
-
-        <Preference
-            android:key="pref_text_area_size"
-            android:persistent="false"
-            android:title="@string/pref_text_area_size_title"
-            android:summary="@string/pref_text_area_size_summary" />
 
     </PreferenceCategory>
 
