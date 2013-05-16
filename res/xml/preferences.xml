@@ -171,11 +171,6 @@
 
     <!-- QuickMessage settings -->
     <PreferenceCategory android:title="@string/pref_quickmessage">
-        <CheckBoxPreference
-            android:key="pref_dark_theme"
-            android:title="@string/pref_dark_theme_title"
-            android:summary="@string/pref_dark_theme_summary"
-            android:defaultValue="false" />
 
         <CheckBoxPreference
             android:key="pref_key_quickmessage"
@@ -297,6 +292,21 @@
             android:entries="@array/pref_mms_message_font_size_entries"
             android:entryValues="@array/pref_mms_message_font_size_values"
             android:dialogTitle="@string/pref_dialogtitle_mms_message_font_size"/>
+
+        <Preference
+            android:key="pref_text_area_size"
+            android:persistent="false"
+            android:title="@string/pref_text_area_size_title"
+            android:summary="@string/pref_text_area_size_summary" />
+
+        <com.android.mms.preferences.UserAgentListPreference
+            android:key="pref_key_mms_user_agent"
+            android:defaultValue="default"
+            android:title="@string/pref_title_mms_user_agent"
+            android:summary="@string/pref_summary_mms_user_agent"
+            android:entries="@array/pref_mms_user_agent_entries"
+            android:entryValues="@array/pref_mms_user_agent_values"
+            android:dialogTitle="@string/pref_title_mms_user_agent" />
 
     </PreferenceCategory>
 

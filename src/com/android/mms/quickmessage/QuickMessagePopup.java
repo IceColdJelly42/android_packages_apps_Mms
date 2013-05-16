@@ -37,6 +37,7 @@ import android.os.Parcelable;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.provider.ContactsContract.Profile;
+import android.provider.Settings;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.InputFilter;
@@ -187,12 +188,14 @@ public class QuickMessagePopup extends Activity implements
         mFullTimestamp = prefs.getBoolean(MessagingPreferenceActivity.FULL_TIMESTAMP, false);
         mCloseClosesAll = prefs.getBoolean(MessagingPreferenceActivity.QM_CLOSE_ALL_ENABLED, false);
         mWakeAndUnlock = prefs.getBoolean(MessagingPreferenceActivity.QM_LOCKSCREEN_ENABLED, false);
-        mDarkTheme = prefs.getBoolean(MessagingPreferenceActivity.QM_DARK_THEME_ENABLED, false);
         mUnicodeStripping = prefs.getInt(MessagingPreferenceActivity.UNICODE_STRIPPING_VALUE,
                 MessagingPreferenceActivity.UNICODE_STRIPPING_LEAVE_INTACT);
         mEnableEmojis = prefs.getBoolean(MessagingPreferenceActivity.ENABLE_EMOJIS, false);
         mInputMethod = Integer.parseInt(prefs.getString(MessagingPreferenceActivity.INPUT_TYPE,
                 Integer.toString(InputType.TYPE_TEXT_VARIATION_SHORT_MESSAGE)));
+
+        mDarkTheme = Settings.Secure.getInt(mContext.getContentResolver(),
+                            Settings.Secure.UI_INVERTED_MODE, 0) == 1;
 
         // Set the window features and layout
         requestWindowFeature(Window.FEATURE_NO_TITLE);

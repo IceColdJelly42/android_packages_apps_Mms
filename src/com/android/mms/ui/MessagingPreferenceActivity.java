@@ -118,13 +118,20 @@ public class MessagingPreferenceActivity extends PreferenceActivity
     public static final String QUICKMESSAGE_ENABLED      = "pref_key_quickmessage";
     public static final String QM_LOCKSCREEN_ENABLED     = "pref_key_qm_lockscreen";
     public static final String QM_CLOSE_ALL_ENABLED      = "pref_key_close_all";
-    public static final String QM_DARK_THEME_ENABLED     = "pref_dark_theme";
 
     private static final String DIRECT_CALL_PREF         = "direct_call_pref";
     public static final String MESSAGE_FONT_SIZE         = "pref_key_mms_message_font_size";
 
     // Blacklist
     public static final String BUTTON_BLACKLIST  = "button_blacklist";
+
+    // Text Area
+    private static final String PREF_TEXT_AREA_SIZE      = "pref_text_area_size";
+    public static final String TEXT_AREA_SIZE            = "text_area_size";
+    private static final int TEXT_AREA_LIMIT_MIN         = 2;
+    private static final int TEXT_AREA_LIMIT_MAX         = 15;
+    public static final String USER_AGENT               = "pref_key_mms_user_agent";
+    public static final String USER_AGENT_CUSTOM        = "pref_key_mms_user_agent_custom";
 
     // Menu entries
     private static final int MENU_RESTORE_DEFAULTS       = 1;
@@ -142,6 +149,7 @@ public class MessagingPreferenceActivity extends PreferenceActivity
     private Preference mClearHistoryPref;
     private CheckBoxPreference mVibratePref;
     private CheckBoxPreference mBreathPref;
+    private Preference mTextAreaSize;
     private CheckBoxPreference mEnableNotificationsPref;
     private CheckBoxPreference mEnablePrivacyModePref;
     private CheckBoxPreference mMmsAutoRetrievialPref;
@@ -164,7 +172,7 @@ public class MessagingPreferenceActivity extends PreferenceActivity
     private CheckBoxPreference mEnableQuickMessagePref;
     private CheckBoxPreference mEnableQmLockscreenPref;
     private CheckBoxPreference mEnableQmCloseAllPref;
-    private CheckBoxPreference mEnableQmDarkThemePref;
+
     private CheckBoxPreference mDirectCall;
     private EditTextPreference mSignature;
     private String mSignatureText;
@@ -231,6 +239,8 @@ public class MessagingPreferenceActivity extends PreferenceActivity
         mSignature.setOnPreferenceChangeListener(this);
         mSignature.setText(sp.getString(MSG_SIGNATURE, ""));
 
+        mTextAreaSize = findPreference(PREF_TEXT_AREA_SIZE);
+
         // Get the MMS retrieval settings. Defaults to enabled with roaming disabled
         mMmsAutoRetrievialPref = (CheckBoxPreference) findPreference(AUTO_RETRIEVAL);
         ContentResolver resolver = getContentResolver();
@@ -244,7 +254,6 @@ public class MessagingPreferenceActivity extends PreferenceActivity
         mEnableQuickMessagePref = (CheckBoxPreference) findPreference(QUICKMESSAGE_ENABLED);
         mEnableQmLockscreenPref = (CheckBoxPreference) findPreference(QM_LOCKSCREEN_ENABLED);
         mEnableQmCloseAllPref = (CheckBoxPreference) findPreference(QM_CLOSE_ALL_ENABLED);
-        mEnableQmDarkThemePref = (CheckBoxPreference) findPreference(QM_DARK_THEME_ENABLED);
 
         // Keyboard input type
         mInputTypePref = (ListPreference) findPreference(INPUT_TYPE);
@@ -332,7 +341,9 @@ public class MessagingPreferenceActivity extends PreferenceActivity
         setEnabledQuickMessagePref();
         setEnabledQmLockscreenPref();
         setEnabledQmCloseAllPref();
-        setEnabledQmDarkThemePref();
+
+        // Text Area
+        setTextAreaSummary();
 
         // If needed, migrate vibration setting from the previous tri-state setting stored in
         // NOTIFICATION_VIBRATE_WHEN to the boolean setting stored in NOTIFICATION_VIBRATE.
@@ -424,10 +435,6 @@ public class MessagingPreferenceActivity extends PreferenceActivity
         // Enable/Disable the "enable quickmessage" setting according to
         // the "enable privacy mode" setting state
         mEnableQuickMessagePref.setEnabled(!isPrivacyModeEnabled);
-
-        // Enable/Disable the "enable dark theme" setting according to
-        // the "enable privacy mode" setting state
-        mEnableQmDarkThemePref.setEnabled(!isPrivacyModeEnabled);
     }
 
     private void setEnabledQuickMessagePref() {
@@ -448,10 +455,22 @@ public class MessagingPreferenceActivity extends PreferenceActivity
         mEnableQmCloseAllPref.setChecked(getQmCloseAllEnabled(this));
     }
 
-    private void setEnabledQmDarkThemePref() {
-        // The "Use dark theme" setting is really stored in our own prefs. Read the
-        // current value and set the checkbox to match.
-        mEnableQmDarkThemePref.setChecked(getQmDarkThemeEnabled(this));
+    private void setTextAreaSize(Context context, int value) {
+        SharedPreferences.Editor editPrefs =
+            PreferenceManager.getDefaultSharedPreferences(context).edit();
+        editPrefs.putInt(TEXT_AREA_SIZE, value);
+        editPrefs.apply();
+    }
+
+    private int getTextAreaSize(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getInt(TEXT_AREA_SIZE, 3);
+    }
+
+    private void setTextAreaSummary() {
+        mTextAreaSize.setSummary(
+                getString(R.string.pref_text_area_size_summary,
+                        getTextAreaSize(this)));
     }
 
     private void setSmsDisplayLimit() {
@@ -526,8 +545,13 @@ public class MessagingPreferenceActivity extends PreferenceActivity
             // Update "enable quickmessage" checkbox state
             mEnableQuickMessagePref.setEnabled(!mEnablePrivacyModePref.isChecked());
 
-            // Update "enable dark theme" checkbox state
-            mEnableQmDarkThemePref.setEnabled(!mEnablePrivacyModePref.isChecked());
+        } else if (preference == mTextAreaSize) {
+            new NumberPickerDialog(this,
+                    mTextAreaSizeListener,
+                    getTextAreaSize(this),
+                    TEXT_AREA_LIMIT_MIN,
+                    TEXT_AREA_LIMIT_MAX,
+                    R.string.pref_text_area_size_title).show();
 
         } else if (preference == mEnableQuickMessagePref) {
             // Update the actual "enable quickmessage" value that is stored in secure settings.
@@ -540,10 +564,6 @@ public class MessagingPreferenceActivity extends PreferenceActivity
         } else if (preference == mEnableQmCloseAllPref) {
             // Update the actual "enable close all" value that is stored in secure settings.
             enableQmCloseAll(mEnableQmCloseAllPref.isChecked(), this);
-
-        } else if (preference == mEnableQmDarkThemePref) {
-            // Update the actual "enable dark theme" value that is stored in secure settings.
-            enableQmDarkTheme(mEnableQmDarkThemePref.isChecked(), this);
 
         } else if (preference == mMmsRetrievalDuringRoamingPref) {
             // Update the value in Settings.System
@@ -584,6 +604,14 @@ public class MessagingPreferenceActivity extends PreferenceActivity
             public void onNumberSet(int limit) {
                 mMmsRecycler.setMessageLimit(MessagingPreferenceActivity.this, limit);
                 setMmsDisplayLimit();
+            }
+    };
+
+    NumberPickerDialog.OnNumberSetListener mTextAreaSizeListener =
+        new NumberPickerDialog.OnNumberSetListener() {
+            public void onNumberSet(int value) {
+                setTextAreaSize(MessagingPreferenceActivity.this, value);
+                setTextAreaSummary();
             }
     };
 
@@ -684,20 +712,6 @@ public class MessagingPreferenceActivity extends PreferenceActivity
             PreferenceManager.getDefaultSharedPreferences(context).edit();
         editor.putBoolean(MessagingPreferenceActivity.QM_CLOSE_ALL_ENABLED, enabled);
         editor.apply();
-    }
-
-    public static void enableQmDarkTheme(boolean enabled, Context context) {
-        SharedPreferences.Editor editor =
-            PreferenceManager.getDefaultSharedPreferences(context).edit();
-        editor.putBoolean(MessagingPreferenceActivity.QM_DARK_THEME_ENABLED, enabled);
-        editor.apply();
-    }
-
-    public static boolean getQmDarkThemeEnabled(Context context) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        boolean qmDarkThemeEnabled =
-            prefs.getBoolean(MessagingPreferenceActivity.QM_DARK_THEME_ENABLED, false);
-        return qmDarkThemeEnabled;
     }
 
     public static boolean getGroupMMSEnabled(Context context) {

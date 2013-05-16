@@ -832,10 +832,6 @@
 
     <string name="pref_quickmessage">Quick reply</string>
 
-    <!-- Use dark theme -->
-    <string name="pref_dark_theme_title">Use dark theme</string>
-    <string name="pref_dark_theme_summary">If not selected, the default \'light\' theme will be used</string>
-
     <!-- Show pop-up -->
     <string name="pref_quickmessage_title">Show pop-up</string>
     <string name="pref_quickmessage_summary">Display the QuickMessage pop-up for incoming SMS messages</string>
@@ -1001,5 +997,22 @@
     <string name="ok">OK</string>
 
     <string name="selectContact">select contact</string>
+
+    <!-- Text area -->
+    <string name="pref_text_area_size_title">Text area size</string>
+    <string name="pref_text_area_size_summary">Set text area to <xliff:g id="lines">%1$s</xliff:g> lines</string>
+
+    <!-- Custom user-agent -->
+    <string name="pref_mms_ua_default_android">Default Android</string>
+    <string name="pref_mms_ua_nokia_n95">Nokia N95</string>
+    <string name="pref_mms_ua_iphone_3_0">iPhone (3.0)</string>
+    <string name="pref_mms_ua_blackberry_8800">BlackBerry 8800</string>
+    <string name="pref_mms_ua_sonyericsson_w800i">Sony Ericsson W800i</string>
+    <string name="pref_mms_ua_softbank_x01t">SoftBank X01T</string>
+    <string name="pref_mms_ua_softbank_myrmms">SoftBank MyrMMS</string>
+    <string name="pref_mms_ua_custom_option">Custom\u2026</string>
+    <string name="pref_title_mms_user_agent">User Agent</string>
+    <string name="pref_summary_mms_user_agent">Spoof phone as a different model for MMS</string>
+    <string name="pref_mms_user_agent_custom_set">ser Agent set to:\n</string>
 
 </resources>

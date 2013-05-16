@@ -968,8 +968,8 @@ public class ComposeMessageActivity extends Activity
                     continue;
 
                 if (c == ',') {
-                    ContactList contacts = mRecipientsEditor.constructContactsFromInput(false);
-                    updateTitle(contacts);
+		    /*After we add many of contacts in the recipient editor, inputing character will be very slowly.*/
+		    updateTitle(mConversation.getRecipients());
                 }
 
                 break;
@@ -2546,6 +2546,9 @@ public class ComposeMessageActivity extends Activity
     protected void onResume() {
         super.onResume();
 
+        // Init settings
+        initResourceRefs();
+
         // OLD: get notified of presence updates to update the titlebar.
         // NEW: we are using ContactHeaderWidget which displays presence, but updating presence
         //      there is out of our control.
@@ -3999,8 +4002,8 @@ public class ComposeMessageActivity extends Activity
         mTextEditor = (EditText) findViewById(R.id.embedded_text_editor);
         mTextEditor.setOnEditorActionListener(this);
         mTextEditor.addTextChangedListener(mTextEditorWatcher);
-        mTextEditor.setFilters(new InputFilter[] {
-                new LengthFilter(MmsConfig.getMaxTextLimit())});
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        mTextEditor.setMaxLines(prefs.getInt(MessagingPreferenceActivity.TEXT_AREA_SIZE, 3));
         mTextCounter = (TextView) findViewById(R.id.text_counter);
         mSendButtonMms = (TextView) findViewById(R.id.send_button_mms);
         mSendButtonSms = (ImageButton) findViewById(R.id.send_button_sms);
@@ -4556,12 +4559,14 @@ public class ComposeMessageActivity extends Activity
                     int newSelectionPos = -1;
                     long targetMsgId = getIntent().getLongExtra("select_id", -1);
                     if (targetMsgId != -1) {
-                        cursor.moveToPosition(-1);
-                        while (cursor.moveToNext()) {
-                            long msgId = cursor.getLong(COLUMN_ID);
-                            if (msgId == targetMsgId) {
-                                newSelectionPos = cursor.getPosition();
-                                break;
+						if (cursor != null) {
+							cursor.moveToPosition(-1);
+							while (cursor.moveToNext()) {
+								long msgId = cursor.getLong(COLUMN_ID);
+								if (msgId == targetMsgId) {
+									newSelectionPos = cursor.getPosition();
+									break;
+								}
                             }
                         }
                     } else if (mSavedScrollPosition != -1) {
@@ -4617,7 +4622,7 @@ public class ComposeMessageActivity extends Activity
                     // mSentMessage is true).
                     // Show the recipients editor to give the user a chance to add
                     // more people before the conversation begins.
-                    if (cursor.getCount() == 0 && !isRecipientsEditorVisible() && !mSentMessage) {
+                    if (cursor != null && cursor.getCount() == 0 && !isRecipientsEditorVisible() && !mSentMessage) {
                         initRecipientsEditor();
                     }
 
@@ -4653,7 +4658,7 @@ public class ComposeMessageActivity extends Activity
                     if (cursor == null) {
                         return;
                     }
-                    if (tid > 0 && cursor.getCount() == 0) {
+                    if (tid > 0 && cursor != null && cursor.getCount() == 0) {
                         // We just deleted the last message and the thread will get deleted
                         // by a trigger in the database. Clear the threadId so next time we
                         // need the threadId a new thread will get created.

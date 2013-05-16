@@ -298,6 +298,9 @@ public class MessagingNotification {
         if (delivery != null) {
             delivery.deliver(context, isStatusMessage);
         }
+
+        notificationSet.clear();
+        threads.clear();
     }
 
     /**
@@ -872,7 +875,8 @@ public class MessagingNotification {
         NotificationInfo mostRecentNotification = notificationSet.first();
 
         final Notification.Builder noti = new Notification.Builder(context)
-                .setWhen(mostRecentNotification.mTimeMillis);
+                .setWhen(mostRecentNotification.mTimeMillis)
+                .setNumber(messageCount);
 
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
         boolean privacyMode = sp.getBoolean(MessagingPreferenceActivity.PRIVACY_MODE_ENABLED, false);
@@ -1162,6 +1166,10 @@ public class MessagingNotification {
                         inboxStyle.addLine(info.formatInboxMessage(context));
                     }
                     notification = inboxStyle.build();
+
+                    uniqueThreads.clear();
+                    mostRecentNotifPerThread.clear();
+
                     if (DEBUG) {
                         Log.d(TAG, "updateNotification: multi messages," +
                                 " showing inboxStyle notification");
