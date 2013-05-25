@@ -430,7 +430,7 @@ public class Contact {
                 Phone.CONTACT_PRESENCE,         // 5
                 Phone.CONTACT_STATUS,           // 6
                 Phone.NORMALIZED_NUMBER,        // 7
-                Contacts.SEND_TO_VOICEMAIL      // 8
+                Contacts.SEND_TO_VOICEMAIL,     // 8
                 Contacts.CUSTOM_NOTIFICATION    // 9
         };
 
@@ -465,7 +465,7 @@ public class Contact {
                 Email.CONTACT_PRESENCE,       // 2
                 Email.CONTACT_ID,             // 3
                 Phone.DISPLAY_NAME,           // 4
-                Contacts.SEND_TO_VOICEMAIL    // 5
+                Contacts.SEND_TO_VOICEMAIL,   // 5
                 Contacts.CUSTOM_NOTIFICATION     // 6
         };
         private static final int EMAIL_ID_COLUMN = 0;
