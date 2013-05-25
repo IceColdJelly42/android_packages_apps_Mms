@@ -903,6 +903,8 @@ public class MessagingNotification {
         String title = null;
         String privateModeContentText = null;
         Bitmap avatar = null;
+        String customNotification = null;
+
         if (uniqueThreadCount > 1) {    // messages from multiple threads
             Intent mainActivityIntent = new Intent(Intent.ACTION_MAIN);
 
@@ -952,6 +954,8 @@ public class MessagingNotification {
                 }
             }
 
+            customNotification = mostRecentNotification.mSender.getCustomNotificationUriString();
+			
             taskStackBuilder.addParentStack(ComposeMessageActivity.class);
             taskStackBuilder.addNextIntent(mostRecentNotification.mClickIntent);
         }
@@ -1010,7 +1014,16 @@ public class MessagingNotification {
 
             String ringtoneStr = sp.getString(MessagingPreferenceActivity.NOTIFICATION_RINGTONE,
                     null);
-            noti.setSound(TextUtils.isEmpty(ringtoneStr) ? null : Uri.parse(ringtoneStr));
+            // only if notification sounds are not disabled globally
+            if (!TextUtils.isEmpty(ringtoneStr)){
+                if (!TextUtils.isEmpty(customNotification)) {
+                    noti.setSound(Uri.parse(customNotification));
+                } else {
+                    noti.setSound(Uri.parse(ringtoneStr));
+                }
+            } else {
+                noti.setSound(null);
+            }
             if (DEBUG) {
                 Log.d(TAG, "updateNotification: new message, adding sound to the notification");
             }
