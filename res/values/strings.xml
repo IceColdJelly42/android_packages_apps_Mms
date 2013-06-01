@@ -1026,4 +1026,8 @@
     <string name="pref_title_sms_split">Split SMS</string>
     <string name="pref_summary_sms_split">Text messages will be split to 160 char messages</string>
 
+    <!-- MMS push permission -->
+    <string name="label_mms_push">MMS Push</string>
+    <string name="desc_mms_push">Pushes MMS from outbox to the network</string>
+
 </resources>
