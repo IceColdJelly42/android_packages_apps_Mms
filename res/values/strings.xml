@@ -1038,4 +1038,7 @@
     <string name="label_mms_push">MMS Push</string>
     <string name="desc_mms_push">Pushes MMS from outbox to the network</string>
 
+    <string name="storage_warning_title">Your phone\'s storage is full</string>
+    <string name="storage_warning_content">You won\'t receive new SMS/MMS messages</string>
+
 </resources>
