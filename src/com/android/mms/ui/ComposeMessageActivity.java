@@ -285,6 +285,9 @@ public class ComposeMessageActivity extends Activity
 
     private static final long NO_DATE_FOR_DIALOG = -1L;
 
+    private static final String KEY_EXIT_ON_SENT = "exit_on_sent";
+    private static final String KEY_FORWARDED_MESSAGE = "forwarded_message";
+
     private static final String EXIT_ECM_RESULT = "exit_ecm_result";
 
     // When the conversation has a lot of messages and a new message is sent, the list is scrolled
@@ -313,8 +316,10 @@ public class ComposeMessageActivity extends Activity
 
     private Conversation mConversation;     // Conversation we are working in
 
-    private boolean mExitOnSent;            // Should we finish() after sending a message?
-                                            // TODO: mExitOnSent is obsolete -- remove
+    // When mSendDiscreetMode is true, this activity only allows a user to type in and send
+    // a single sms, send the message, and then exits. The message history and menus are hidden.
+    private boolean mSendDiscreetMode;
+    private boolean mForwardMessageMode;
 
     private View mTopPanel;                 // View containing the recipient and subject editors
     private View mBottomPanel;              // View containing the text editor, send button, ec.
@@ -1358,8 +1363,8 @@ public class ComposeMessageActivity extends Activity
                 // on the UI thread.
                 Intent intent = createIntent(ComposeMessageActivity.this, 0);
 
-                intent.putExtra("exit_on_sent", true);
-                intent.putExtra("forwarded_message", true);
+                intent.putExtra(KEY_EXIT_ON_SENT, true);
+                intent.putExtra(KEY_FORWARDED_MESSAGE, true);
                 if (mTempThreadId > 0) {
                     intent.putExtra(THREAD_ID, mTempThreadId);
                 }
@@ -1731,6 +1736,9 @@ public class ComposeMessageActivity extends Activity
                 if (isDrm) {
                     extension += DrmUtils.getConvertExtension(type);
                 }
+                // Remove leading periods. The gallery ignores files starting with a period.
+                fileName = fileName.replaceAll("^.", "");
+
                 File file = getUniqueDestination(dir + fileName, extension);
 
                 // make sure the path is valid and directories created for this file.
@@ -2395,7 +2403,7 @@ public class ComposeMessageActivity extends Activity
      * @param debugFlag shows where this is being called from
      */
     private void loadMessagesAndDraft(int debugFlag) {
-        if (!mMessagesAndDraftLoaded) {
+        if (!mSendDiscreetMode && !mMessagesAndDraftLoaded) {
             if (Log.isLoggable(LogTag.APP, Log.VERBOSE)) {
                 Log.v(TAG, "### CMA.loadMessagesAndDraft: flag=" + debugFlag);
             }
@@ -2437,8 +2445,11 @@ public class ComposeMessageActivity extends Activity
 
         mWorkingMessage.writeStateToBundle(outState);
 
-        if (mExitOnSent) {
-            outState.putBoolean("exit_on_sent", mExitOnSent);
+        if (mSendDiscreetMode) {
+            outState.putBoolean(KEY_EXIT_ON_SENT, mSendDiscreetMode);
+        }
+        if (mForwardMessageMode) {
+            outState.putBoolean(KEY_FORWARDED_MESSAGE, mForwardMessageMode);
         }
     }
 
@@ -2869,6 +2880,12 @@ public class ComposeMessageActivity extends Activity
         super.onPrepareOptionsMenu(menu) ;
 
         menu.clear();
+
+        if (mSendDiscreetMode && !mForwardMessageMode) {
+            // When we're in send-a-single-message mode from the lock screen, don't show
+            // any menus.
+            return true;
+        }
 
         if (isRecipientCallable()) {
             MenuItem item = menu.add(0, MENU_CALL_RECIPIENT, 0, R.string.menu_call)
@@ -3488,7 +3505,7 @@ public class ComposeMessageActivity extends Activity
 
         // If this is a forwarded message, it will have an Intent extra
         // indicating so.  If not, bail out.
-        if (intent.getBooleanExtra("forwarded_message", false) == false) {
+        if (!mForwardMessageMode) {
             return false;
         }
 
@@ -3873,6 +3890,9 @@ public class ComposeMessageActivity extends Activity
     }
 
     private void startMsgListQuery(int token) {
+        if (mSendDiscreetMode) {
+            return;
+        }
         Uri conversationUri = mConversation.getUri();
 
         if (conversationUri == null) {
@@ -3917,7 +3937,7 @@ public class ComposeMessageActivity extends Activity
         mMsgListAdapter.setMsgListItemHandler(mMessageListItemHandler);
         mMsgListView.setAdapter(mMsgListAdapter);
         mMsgListView.setItemsCanFocus(false);
-        mMsgListView.setVisibility(View.VISIBLE);
+        mMsgListView.setVisibility(mSendDiscreetMode ? View.INVISIBLE : View.VISIBLE);
         mMsgListView.setOnCreateContextMenuListener(mMsgListMenuCreateListener);
         mMsgListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -4069,7 +4089,7 @@ public class ComposeMessageActivity extends Activity
             mScrollOnSend = true;   // in the next onQueryComplete, scroll the list to the end.
         }
         // But bail out if we are supposed to exit after the message is sent.
-        if (mExitOnSent) {
+        if (mSendDiscreetMode) {
             finish();
         }
     }
@@ -4176,7 +4196,12 @@ public class ComposeMessageActivity extends Activity
                     ContactList.getByNumbers(recipients,
                             false /* don't block */, true /* replace number */), false);
             addRecipientsListeners();
-            mExitOnSent = bundle.getBoolean("exit_on_sent", false);
+            mSendDiscreetMode = bundle.getBoolean(KEY_EXIT_ON_SENT, false);
+            mForwardMessageMode = bundle.getBoolean(KEY_FORWARDED_MESSAGE, false);
+
+            if (mSendDiscreetMode) {
+                mMsgListView.setVisibility(View.INVISIBLE);
+            }
             mWorkingMessage.readStateFromBundle(bundle);
 
             return;
@@ -4210,7 +4235,11 @@ public class ComposeMessageActivity extends Activity
         addRecipientsListeners();
         updateThreadIdIfRunning();
 
-        mExitOnSent = intent.getBooleanExtra("exit_on_sent", false);
+        mSendDiscreetMode = intent.getBooleanExtra(KEY_EXIT_ON_SENT, false);
+        mForwardMessageMode = intent.getBooleanExtra(KEY_FORWARDED_MESSAGE, false);
+        if (mSendDiscreetMode) {
+            mMsgListView.setVisibility(View.INVISIBLE);
+        }
         if (intent.hasExtra("sms_body")) {
             mWorkingMessage.setText(intent.getStringExtra("sms_body"));
         }

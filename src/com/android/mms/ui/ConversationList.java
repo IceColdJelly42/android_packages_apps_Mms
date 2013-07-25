@@ -174,6 +174,9 @@ public class ConversationList extends ListActivity implements DraftCache.OnDraft
     public void onPause() {
         super.onPause();
 
+        // Don't listen for changes while we're paused.
+        mListAdapter.setOnContentChangedListener(null);
+
         // Remember where the list is scrolled to so we can restore the scroll position
         // when we come back to this activity and *after* we complete querying for the
         // conversations.
@@ -182,6 +185,13 @@ public class ConversationList extends ListActivity implements DraftCache.OnDraft
         View firstChild = listView.getChildAt(0);
         mSavedFirstItemOffset = (firstChild == null) ? 0 : firstChild.getTop();
         mIsRunning = false;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        mListAdapter.setOnContentChangedListener(mContentChangedListener);
     }
 
     private void setupActionBar() {
